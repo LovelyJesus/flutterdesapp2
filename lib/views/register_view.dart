@@ -2,6 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'dart:developer' as devtools show log;
 
+import 'package:mydesapp/constants/routes.dart';
+
 
 
 class RegisterView extends StatefulWidget {
@@ -64,7 +66,12 @@ appBar: AppBar(title: const Text('Sign up'),
                   email: email,
                   password: password,
                 );
-                devtools.log(userCredential.toString());
+                Navigator.of(context)
+                    .pushNamedAndRemoveUntil(
+                  loginRoute,
+                      (route) => false,
+                );
+                 // devtools.log(userCredential.toString());
                 // print(userCredential);
               } on FirebaseAuthException catch (e) {
                 if (e.code == 'invalid-email') {
@@ -86,18 +93,14 @@ appBar: AppBar(title: const Text('Sign up'),
                 //   print(e.code);
                 // } to check for handle errors
               }
-              Navigator.of(context)
-                  .pushNamedAndRemoveUntil(
-                '/login/',
-                    (route) => false,
-              );
+
             },
             child: const Text('Sign Up'),
           ),
           TextButton(onPressed: () {
             Navigator.of(context)
                 .pushNamedAndRemoveUntil(
-              '/login/',
+              loginRoute,
                   (route) => false,
             );
 

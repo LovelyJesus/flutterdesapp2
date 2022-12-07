@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:developer' as devtools show log;
 
+import 'package:mydesapp/constants/routes.dart';
+
 
 class LoginView extends StatefulWidget {
   const LoginView({Key? key}) : super(key: key);
@@ -64,7 +66,7 @@ class _LoginViewState extends State<LoginView> {
                 );
                 Navigator.of(context)
                     .pushNamedAndRemoveUntil(
-                  '/note/',
+                  notesRoute,
                       (route) => false,
                 );
                 // devtools.log(userCredential.toString());
@@ -98,7 +100,7 @@ class _LoginViewState extends State<LoginView> {
             onPressed: () {
               Navigator.of(context)
                   .pushNamedAndRemoveUntil(
-                  '/register/',
+                 registerRoute,
                       (route) => false,
               );
             },
