@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "266895234393",
+    "project_id": "mydesapp-9f2d2",
+    "storage_bucket": "mydesapp-9f2d2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:266895234393:android:9f017238f3ac69c7d4a848",
+        "android_client_info": {
+          "package_name": "com.destiny.mydesapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "266895234393-ggg96c9djac75fl5ojket304gorb7l35.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCmL2KoIlSVGfWFdAd4dvyfOBk47q8-KL0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "266895234393-ggg96c9djac75fl5ojket304gorb7l35.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
