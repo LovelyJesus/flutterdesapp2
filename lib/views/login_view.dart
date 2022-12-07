@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'dart:developer' as devtools show log;
-
+// import 'dart:developer' as devtools show log;
 import 'package:mydesapp/constants/routes.dart';
-
+import '../utilities/show_error_dialog.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({Key? key}) : super(key: key);
@@ -18,8 +17,8 @@ class _LoginViewState extends State<LoginView> {
 
   @override
   void initState() {
-      _email = TextEditingController();
-      _password = TextEditingController();
+    _email = TextEditingController();
+    _password = TextEditingController();
     super.initState();
   }
 
@@ -32,8 +31,10 @@ class _LoginViewState extends State<LoginView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(appBar: AppBar(title: const Text('Login'),
-    ),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Login'),
+      ),
       body: Column(
         children: [
           TextField(
@@ -59,29 +60,50 @@ class _LoginViewState extends State<LoginView> {
               final email = _email.text;
               final password = _password.text;
               try {
-                final userCredential =
-                    await FirebaseAuth.instance.signInWithEmailAndPassword(
+                await FirebaseAuth.instance.signInWithEmailAndPassword(
                   email: email,
                   password: password,
                 );
-                Navigator.of(context)
-                    .pushNamedAndRemoveUntil(
+                // final userCredential =
+                // await FirebaseAuth.instance.signInWithEmailAndPassword(
+                //   email: email,
+                //   password: password,
+                // );
+                Navigator.of(context).pushNamedAndRemoveUntil(
                   notesRoute,
-                      (route) => false,
+                  (route) => false,
                 );
                 // devtools.log(userCredential.toString());
                 // print(userCredential);
               } on FirebaseAuthException catch (e) {
                 if (e.code == 'user-not-found') {
-                  devtools.log('User not found');
+                  // devtools.log('User not found');
+                  await showErrorDialog(
+                    context,
+                    'User not found',
+                  );
                 } else if (e.code == 'wrong-password') {
-                  devtools.log('Wrong password');
+                  // devtools.log('Wrong password');
+                  await showErrorDialog(
+                    context,
+                    'Wrong password',
+                  );
+                } else {
+                  await showErrorDialog(
+                    context,
+                    'Error: ${e.code}',
+                  );
                 }
                 // if (e.code == 'user-not-found') {
                 //   print('User not found');
                 // } else if (e.code == 'wrong-password') {
                 //   print('Wrong password');
                 // }
+              } catch (e) {
+                await showErrorDialog(
+                  context,
+                  e.toString(),
+                );
               }
               // catch (e) {
               //   print('something bad happened');
@@ -98,10 +120,9 @@ class _LoginViewState extends State<LoginView> {
           ),
           TextButton(
             onPressed: () {
-              Navigator.of(context)
-                  .pushNamedAndRemoveUntil(
-                 registerRoute,
-                      (route) => false,
+              Navigator.of(context).pushNamedAndRemoveUntil(
+                registerRoute,
+                (route) => false,
               );
             },
             child: const Text(" I Don't have an account Sign up"),
@@ -111,6 +132,7 @@ class _LoginViewState extends State<LoginView> {
     );
   }
 }
+
 
 // class LoginView extends StatefulWidget {
 //   const LoginView({Key? key}) : super(key: key);
