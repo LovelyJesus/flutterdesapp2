@@ -3,8 +3,7 @@ import 'package:flutter/material.dart';
 import 'dart:developer' as devtools show log;
 
 import 'package:mydesapp/constants/routes.dart';
-
-
+import 'package:mydesapp/utilities/show_error_dialog.dart';
 
 class RegisterView extends StatefulWidget {
   const RegisterView({Key? key}) : super(key: key);
@@ -34,8 +33,9 @@ class RegisterViewState extends State<RegisterView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-appBar: AppBar(title: const Text('Sign up'),
-),
+      appBar: AppBar(
+        title: const Text('Sign up'),
+      ),
       body: Column(
         children: [
           TextField(
@@ -61,25 +61,50 @@ appBar: AppBar(title: const Text('Sign up'),
               final email = _email.text;
               final password = _password.text;
               try {
-                final userCredential = await FirebaseAuth.instance
-                    .createUserWithEmailAndPassword(
+                    await FirebaseAuth.instance.createUserWithEmailAndPassword(
                   email: email,
                   password: password,
                 );
-                Navigator.of(context)
-                    .pushNamedAndRemoveUntil(
-                  loginRoute,
-                      (route) => false,
+                // final userCredential =
+                // await FirebaseAuth.instance.createUserWithEmailAndPassword(
+                //   email: email,
+                //   password: password,
+                // );
+                    final user = FirebaseAuth.instance.currentUser;
+                    await user?.sendEmailVerification();
+                Navigator.of(context).pushNamed(
+                  verifyEmailRoute,
                 );
-                 // devtools.log(userCredential.toString());
+                // Navigator.of(context).pushNamedAndRemoveUntil(
+                //   loginRoute,
+                //   (route) => false,
+                // );
+                // devtools.log(userCredential.toString());
                 // print(userCredential);
               } on FirebaseAuthException catch (e) {
                 if (e.code == 'invalid-email') {
-                  devtools.log('Invalid Email');
+                  // devtools.log('Invalid Email');
+                  await showErrorDialog(
+                    context,
+                    'Invalid Email',
+                  );
                 } else if (e.code == 'email-already-in-use') {
-                  devtools.log('Email already exist');
+                  // devtools.log('Email already exist');
+                  await showErrorDialog(
+                    context,
+                    'Email already in use',
+                  );
                 } else if (e.code == 'weak-password') {
-                  devtools.log('Weak Password');
+                  // devtools.log('Weak Password');
+                  await showErrorDialog(
+                    context,
+                    'Weak password',
+                  );
+                } else {
+                  await showErrorDialog(
+                    context,
+                    'Error: ${e.code}',
+                  );
                 }
 
                 // if (e.code == 'invalid-email') {
@@ -92,19 +117,22 @@ appBar: AppBar(title: const Text('Sign up'),
                 // else {
                 //   print(e.code);
                 // } to check for handle errors
+              } catch (e) {
+                await showErrorDialog(
+                  context,
+                  e.toString(),
+                );
               }
-
             },
             child: const Text('Sign Up'),
           ),
-          TextButton(onPressed: () {
-            Navigator.of(context)
-                .pushNamedAndRemoveUntil(
-              loginRoute,
-                  (route) => false,
-            );
-
-          },
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pushNamedAndRemoveUntil(
+                loginRoute,
+                (route) => false,
+              );
+            },
             child: const Text('Already have an account'),
           ),
         ],
@@ -112,14 +140,6 @@ appBar: AppBar(title: const Text('Sign up'),
     );
   }
 }
-
-
-
-
-
-
-
-
 
 // import 'package:firebase_auth/firebase_auth.dart';
 // import 'package:firebase_core/firebase_core.dart';
