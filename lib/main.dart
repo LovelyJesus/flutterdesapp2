@@ -43,12 +43,14 @@ class HomePage extends StatelessWidget {
             final user = FirebaseAuth.instance.currentUser;
             if (user != null) {
               if (user.emailVerified) {
-                return const NoteView();
+                 return const NoteView();
+                // print('You are a verified user');
               } else {
                 return const VerifyEmailView();
               }
             } else {
               return const LoginView();
+              // print('Verify your email');
             }
             //  return const NoteView();
             // print(FirebaseAuth.instance.currentUser);
