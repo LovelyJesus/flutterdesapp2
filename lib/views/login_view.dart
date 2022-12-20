@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:firebase_auth/firebase_auth.dart';
 // import 'dart:developer' as devtools show log;
 import 'package:mydesapp/constants/routes.dart';
+import 'package:mydesapp/services/auth/auth_service.dart';
 import '../utilities/show_error_dialog.dart';
+import 'package:mydesapp/services/auth/auth_exceptions.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({Key? key}) : super(key: key);
@@ -60,12 +62,17 @@ class _LoginViewState extends State<LoginView> {
               final email = _email.text;
               final password = _password.text;
               try {
-                await FirebaseAuth.instance.signInWithEmailAndPassword(
+                await AuthService.firebase().logIn(
                   email: email,
                   password: password,
                 );
-                final user = FirebaseAuth.instance.currentUser;
-                if (user?.emailVerified ?? false) {
+
+                // await FirebaseAuth.instance.signInWithEmailAndPassword(
+                //   email: email,
+                //   password: password,
+                // );
+                final user = AuthService.firebase().currentUser;
+                if (user?.isEmailVerified ?? false) {
                   // user's email is verified
                   Navigator.of(context).pushNamedAndRemoveUntil(
                     notesRoute,
@@ -78,6 +85,20 @@ class _LoginViewState extends State<LoginView> {
                         (route) => false,
                   );
                 }
+                // final user = FirebaseAuth.instance.currentUser;
+                // if (user?.emailVerified ?? false) {
+                //   // user's email is verified
+                //   Navigator.of(context).pushNamedAndRemoveUntil(
+                //     notesRoute,
+                //         (route) => false,
+                //   );
+                // } else {
+                //   // user's email is not verified
+                //   Navigator.of(context).pushNamedAndRemoveUntil(
+                //     verifyEmailRoute,
+                //         (route) => false,
+                //   );
+                // }
                 // final userCredential =
                 // await FirebaseAuth.instance.signInWithEmailAndPassword(
                 //   email: email,
@@ -86,41 +107,54 @@ class _LoginViewState extends State<LoginView> {
 
                 // devtools.log(userCredential.toString());
                 // print(userCredential);
-              } on FirebaseAuthException catch (e) {
-                if (e.code == 'user-not-found') {
-                  // devtools.log('User not found');
-                  await showErrorDialog(
-                    context,
+              } on UserNotFoundAuthException {
+                await showErrorDialog(context,
                     'User not found',
-                  );
-                } else if (e.code == 'wrong-password') {
-                  // devtools.log('Wrong password');
-                  await showErrorDialog(
-                    context,
-                    'Wrong password',
-                  );
-                } else if (e.code == 'port:443') {
-                  await showErrorDialog(
-                    context,
-                    'Data connection not solid ',
-                  );
-                } else {
-                  await showErrorDialog(
-                    context,
-                    'Error: ${e.code}',
-                  );
-                }
+                );
+              } on WrongPasswordAuthException {
+                await showErrorDialog(context,
+                  'Wrong password',
+                );
+              } on GenericAuthException {
+                await showErrorDialog(context,
+                  'Authentication Error',
+                );
+              }
+              // on FirebaseAuthException catch (e) {
+              //   if (e.code == 'user-not-found') {
+              //     // devtools.log('User not found');
+              //     await showErrorDialog(
+              //       context,
+              //       'User not found',
+              //     );
+              //   } else if (e.code == 'wrong-password') {
+              //     // devtools.log('Wrong password');
+              //     await showErrorDialog(
+              //       context,
+              //       'Wrong password',
+              //     );
+              //   } else if (e.code == 'port:443') {
+              //     await showErrorDialog(
+              //       context,
+              //       'Data connection not solid ',
+              //     );
+              //   } else {
+              //     await showErrorDialog(
+              //       context,
+              //       'Error: ${e.code}',
+              //     );
+              //   }
                 // if (e.code == 'user-not-found') {
                 //   print('User not found');
                 // } else if (e.code == 'wrong-password') {
                 //   print('Wrong password');
                 // }
-              } catch (e) {
-                await showErrorDialog(
-                  context,
-                  e.toString(),
-                );
-              }
+              // } catch (e) {
+              //   await showErrorDialog(
+              //     context,
+              //     e.toString(),
+              //   );
+              // }
               // catch (e) {
               //   print('something bad happened');
               //   print(e.runtimeType);

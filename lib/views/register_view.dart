@@ -1,9 +1,12 @@
-import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'dart:developer' as devtools show log;
 
 import 'package:mydesapp/constants/routes.dart';
 import 'package:mydesapp/utilities/show_error_dialog.dart';
+
+import '../services/auth/auth_exceptions.dart';
+import '../services/auth/auth_service.dart';
 
 class RegisterView extends StatefulWidget {
   const RegisterView({Key? key}) : super(key: key);
@@ -61,68 +64,100 @@ class RegisterViewState extends State<RegisterView> {
               final email = _email.text;
               final password = _password.text;
               try {
-                    await FirebaseAuth.instance.createUserWithEmailAndPassword(
+                await AuthService.firebase().createUser(
                   email: email,
                   password: password,
                 );
+
+                // await FirebaseAuth.instance.createUserWithEmailAndPassword(
+                //   email: email,
+                //   password: password,
+                // );
                 // final userCredential =
                 // await FirebaseAuth.instance.createUserWithEmailAndPassword(
                 //   email: email,
                 //   password: password,
                 // );
-                    final user = FirebaseAuth.instance.currentUser;
-                    await user?.sendEmailVerification();
+                AuthService.firebase().currentUser;
+                await AuthService.firebase().sendEmailVerification();
                 Navigator.of(context).pushNamed(
                   verifyEmailRoute,
                 );
+
+                // final user = FirebaseAuth.instance.currentUser;
+                // await user?.sendEmailVerification();
+                // Navigator.of(context).pushNamed(
+                //   verifyEmailRoute,
+                // );
                 // Navigator.of(context).pushNamedAndRemoveUntil(
                 //   loginRoute,
                 //   (route) => false,
                 // );
                 // devtools.log(userCredential.toString());
                 // print(userCredential);
-              } on FirebaseAuthException catch (e) {
-                if (e.code == 'invalid-email') {
-                  // devtools.log('Invalid Email');
-                  await showErrorDialog(
-                    context,
-                    'Invalid Email',
-                  );
-                } else if (e.code == 'email-already-in-use') {
-                  // devtools.log('Email already exist');
-                  await showErrorDialog(
-                    context,
-                    'Email already in use',
-                  );
-                } else if (e.code == 'weak-password') {
-                  // devtools.log('Weak Password');
-                  await showErrorDialog(
-                    context,
-                    'Weak password',
-                  );
-                } else {
-                  await showErrorDialog(
-                    context,
-                    'Error: ${e.code}',
-                  );
-                }
-
-                // if (e.code == 'invalid-email') {
-                //   print('Invalid Email');
-                // } else if (e.code == 'email-already-in-use') {
-                //   print('Email already exist');
-                // } else if (e.code == 'weak-password') {
-                //   print('Weak Password');
-                // }
-                // else {
-                //   print(e.code);
-                // } to check for handle errors
-              } catch (e) {
+              } on InvalidEmailAuthException {
                 await showErrorDialog(
                   context,
-                  e.toString(),
+                  'Invalid Email',
+                );
+              } on EmailAlreadyInUseAuthException {
+                await showErrorDialog(
+                  context,
+                  'Email already in use',
+                );
+              } on WeakPasswordAuthException {
+                await showErrorDialog(
+                  context,
+                  'Weak password',
+                );
+              } on GenericAuthException {
+                await showErrorDialog(
+                  context,
+                  'Failed to register',
                 );
               }
+              // on FirebaseAuthException catch (e) {
+              //   if (e.code == 'invalid-email') {
+              //     // devtools.log('Invalid Email');
+              //     await showErrorDialog(
+              //       context,
+              //       'Invalid Email',
+              //     );
+              //   } else if (e.code == 'email-already-in-use') {
+              //     // devtools.log('Email already exist');
+              //     await showErrorDialog(
+              //       context,
+              //       'Email already in use',
+              //     );
+              //   } else if (e.code == 'weak-password') {
+              //     // devtools.log('Weak Password');
+              //     await showErrorDialog(
+              //       context,
+              //       'Weak password',
+              //     );
+              //   } else {
+              //     await showErrorDialog(
+              //       context,
+              //       'Error: ${e.code}',
+              //     );
+              //   }
+
+              // if (e.code == 'invalid-email') {
+              //   print('Invalid Email');
+              // } else if (e.code == 'email-already-in-use') {
+              //   print('Email already exist');
+              // } else if (e.code == 'weak-password') {
+              //   print('Weak Password');
+              // }
+              // else {
+              //   print(e.code);
+              // } to check for handle errors
+              //   } catch (e) {
+              //     await showErrorDialog(
+              //       context,
+              //       e.toString(),
+              //     );
+              //   }
             },
             child: const Text('Sign Up'),
           ),
